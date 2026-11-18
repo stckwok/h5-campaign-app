@@ -47,6 +47,8 @@ import PhotoFrameGenerator from './components/PhotoFrameGenerator.vue';
 import { usePreloader } from './composables/usePreloader';
 import { useNativeBridge } from './composables/useNativeBridge';
 
+const shareUrl = 'https://h5-campaign-app.motkwok.workers.dev';
+
 const campaignFrames = [
   { id: 'f1', label: 'Classic', url: '/assets/frames/frame-classic.png' },
   { id: 'f2', label: 'Neon', url: '/assets/frames/frame-neon.png' },
