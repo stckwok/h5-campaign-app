@@ -1,0 +1,27 @@
+{
+  "name": "h5-campaign-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "howler": "^2.2.4",
+    "qrcode": "^1.5.4",
+    "swiper": "^14.4.0",
+    "vue": "^3.5.12"
+  },
+  "devDependencies": {
+    "@types/howler": "^2.2.11",
+    "@types/node": "^22.7.5",
+    "@types/qrcode": "^1.5.5",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "typescript": "^5.6.3",
+    "vconsole": "^3.15.1",
+    "vite": "^8.3.8",
+    "vue-tsc": "^3.3.14"
+  }
+}
