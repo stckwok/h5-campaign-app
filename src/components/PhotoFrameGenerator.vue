@@ -51,6 +51,8 @@ import EditorToolbar from './EditorToolbar.vue';
 import { useNativeBridge } from '../composables/useNativeBridge';
 import { loadNormalizedImage } from '../utils/imageLoader';
 import { loadCanvasFont } from '../utils/fontLoader';
+import { useAnalytics } from '../composables/useAnalytics';
+
 
 export interface FrameTemplate {
   id: string;
@@ -126,6 +128,8 @@ const loadFrameAsset = (frame: FrameTemplate): Promise<HTMLImageElement> => {
   });
 };
 
+
+// 2. Track frame template switches
 const selectFrame = async (frameId: string) => {
   const target = props.frames.find((f) => f.id === frameId);
   if (!target) return;
@@ -137,8 +141,12 @@ const selectFrame = async (frameId: string) => {
     console.warn('Frame image failed to load:', target.url);
   }
   renderCanvas();
+  track('frame_selected', { frameId });
 };
 
+const { track } = useAnalytics('/api/analytics/track');
+
+// 1. Track successful EXIF-normalized photo uploads
 const handleFileUpload = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
@@ -147,6 +155,9 @@ const handleFileUpload = async (event: Event) => {
     userImage.value = await loadNormalizedImage(file);
     hasPhoto.value = true;
     resetTransform();
+    track('photo_uploaded', {
+      fileSizeKb: Math.round(file.size / 1024),
+    });
   } catch (err) {
     console.error('Failed to process uploaded photo', err);
   } finally {
@@ -185,8 +196,10 @@ const addTextOverlay = (text: string) => {
   });
   activeOverlayId.value = id;
   renderCanvas();
+  track('text_added', { length: text.trim().length });
 };
 
+// 3. Track sticker & custom text additions
 const addStickerOverlay = (stickerUrl: string) => {
   const img = new Image();
   img.crossOrigin = 'anonymous';
@@ -206,6 +219,7 @@ const addStickerOverlay = (stickerUrl: string) => {
     renderCanvas();
   };
   img.src = stickerUrl;
+  track('sticker_added', { stickerUrl });
 };
 
 const getDistance = (t1: Touch, t2: Touch) => Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
@@ -422,10 +436,17 @@ const generateQrBadge = async (campaignUrl: string, size = 110): Promise<HTMLCan
   return qrCanvas;
 };
 
+// 4. Track final Save & Share conversion
 const exportAndShare = async () => {
   const canvas = canvasRef.value;
   const ctx = canvas?.getContext('2d');
   if (!canvas || !ctx) return;
+
+  track('poster_exported', {
+    frameId: selectedFrameId.value,
+    overlayCount: overlays.value.length,
+    hasUserPhoto: hasPhoto.value,
+  });
 
   renderCanvas(false);
 

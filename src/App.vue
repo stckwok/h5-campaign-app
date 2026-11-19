@@ -46,6 +46,7 @@ import AudioToggle from './components/AudioToggle.vue';
 import PhotoFrameGenerator from './components/PhotoFrameGenerator.vue';
 import { usePreloader } from './composables/usePreloader';
 import { useNativeBridge } from './composables/useNativeBridge';
+import { useAnalytics } from './composables/useAnalytics';
 
 const shareUrl = 'https://h5-campaign-app.motkwok.workers.dev';
 
@@ -66,6 +67,7 @@ const criticalAssets = [
   ...campaignStickers.map((s) => s.url),
 ];
 
+const { track } = useAnalytics('/api/analytics/track');
 const { progress, isLoaded, startPreload } = usePreloader(criticalAssets);
 const { isNativeEnv, getUserInfo } = useNativeBridge();
 const swiperInstance = ref<SwiperInstance | null>(null);
@@ -81,21 +83,34 @@ const toggleSwiperLock = (isInteracting: boolean) => {
   }
 };
 
+// 1. Track vertical slide transitions
 const onSlideChange = (swiper: SwiperInstance) => {
   console.log('Active Slide:', swiper.activeIndex);
+  track('slide_viewed', {
+    slideIndex: swiper.activeIndex,
+  });
 };
 
+// 2. Track initial campaign load time
 onMounted(async () => {
-  startPreload();
-  if (isNativeEnv.value) {
-    try {
-      const user = await getUserInfo();
-      userNickname.value = user.nickname;
-    } catch (err) {
-      console.error('Failed to fetch native user info', err);
-    }
-  }
+  const loadStart = performance.now();
+  await startPreload();
+  track('campaign_loaded', {
+    loadTimeMs: Math.round(performance.now() - loadStart),
+  });
 });
+
+//onMounted(async () => {
+//  startPreload();
+//  if (isNativeEnv.value) {
+//    try {
+//      const user = await getUserInfo();
+//      userNickname.value = user.nickname;
+//    } catch (err) {
+//      console.error('Failed to fetch native user info', err);
+//    }
+//  }
+// });
 </script>
 
 <style>
