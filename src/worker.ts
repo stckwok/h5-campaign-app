@@ -110,16 +110,16 @@ export default {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>H5 Campaign Funnel Stats</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #121216; color: #f4f4f6; margin: 0; padding: 24px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f4f5f7; color: #18181b; margin: 0; padding: 24px; }
     .container { max-width: 720px; margin: 0 auto; }
     h1 { font-size: 22px; margin-bottom: 20px; }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
-    .card { background: #1e1e26; padding: 16px; border-radius: 12px; border: 1px solid #2e2e3a; }
+    .card { background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 16px; border-radius: 12px; border: 1px solid #e4e4e7; }
     .card span { font-size: 12px; color: #9a9aa8; display: block; margin-bottom: 6px; }
     .card strong { font-size: 24px; color: #ff6a00; }
-    table { width: 100%; border-collapse: collapse; background: #1e1e26; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
     th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid #2e2e3a; }
-    th { background: #262630; font-size: 13px; color: #a0a0b0; }
+    th { background: #f1f1f4; color: #52525b; font-size: 13px; color: #a0a0b0; }
     code { background: #2c2c38; padding: 3px 6px; border-radius: 4px; color: #00f2fe; }
   </style>
 </head>
