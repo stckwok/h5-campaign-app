@@ -10,5 +10,12 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "h5-campaign-analytics",
+      "database_id": "a5cc40da-ab7e-4c8c-a270-f935abddfc89"
+    }
+  ]
 }
