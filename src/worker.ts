@@ -13,13 +13,14 @@ interface Env {
     fetch: (request: Request) => Promise<Response>;
   };
   DB?: D1Database;
+  STATS_KEY?: string;
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // 1. Write funnel analytics event to D1
+    // 1. Write funnel analytics event to D1 (Public endpoint for H5 clients)
     if (request.method === 'POST' && url.pathname === '/api/analytics/track') {
       try {
         const body = (await request.json()) as {
@@ -45,7 +46,7 @@ export default {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
         });
-      } catch (err) {
+      } catch {
         return new Response(JSON.stringify({ ok: false }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -53,11 +54,25 @@ export default {
       }
     }
 
-    // 2. Read aggregated funnel counts
+    // 2. Read aggregated funnel counts (Protected by STATS_KEY)
     if (request.method === 'GET' && url.pathname === '/api/analytics/stats') {
-      if (!env.DB) {
-        return new Response(JSON.stringify({ error: 'DB not bound' }), { status: 500 });
+      const providedKey =
+        url.searchParams.get('key') || request.headers.get('X-Stats-Key');
+
+      if (!env.STATS_KEY || providedKey !== env.STATS_KEY) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
+
+      if (!env.DB) {
+        return new Response(JSON.stringify({ error: 'DB not bound' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
       const { results } = await env.DB.prepare(
         'SELECT event, COUNT(*) as count FROM events GROUP BY event ORDER BY count DESC'
       ).all();
